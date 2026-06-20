@@ -66,8 +66,6 @@ Lazy Rabbit 的个人 AI 技能（Skill）合集。
 | [`socratic-design-review`](skills/socratic-design-review/SKILL.md) | 用严谨的苏格拉底式提问评审设计（九大思维元素、Paul 六类提问、CBT 反诘、禅宗话头）——只提问，不给答案。 |
 | [`lazy-harness-audit`](skills/lazy-harness-audit/SKILL.md) | 审计并评分项目的 AI 编码智能体工作环境（harness）。 |
 | [`lazy-harness-helper`](skills/lazy-harness-helper/SKILL.md) | 改进项目的 AI 编码智能体工作环境（harness）。 |
-| [`lazy-skill-write`](skills/lazy-skill-write/SKILL.md) | 使用 CEVF 质量框架编写高质量 AI 技能。 |
-| [`lazy-skill-check`](skills/lazy-skill-check/SKILL.md) | 验证并基准测试 AI 技能。 |
 
 ## 快速开始（一行命令）
 
@@ -128,7 +126,7 @@ curl -fsSL .../setup.sh | LRS_FORCE=1 bash
 ./install.sh                              # 安装全部技能
 ./install.sh gitlab-mr-review             # 安装单个技能
 ./install.sh lazy-go-dev lazy-python-dev  # 安装多个技能
-./install.sh --targets claude,codex lazy-skill-write
+./install.sh --targets claude,codex lazy-go-dev
 ./install.sh --dry-run --all              # 预览而不做改动
 ./install.sh --force --all                # 覆盖已存在的链接
 ```

@@ -67,8 +67,6 @@ agent can load on demand.
 | [`socratic-design-review`](skills/socratic-design-review/SKILL.md) | Review a design with disciplined Socratic questioning (nine lenses, Paul's six types, CBT disputation, Zen 话头) — asks, never answers. |
 | [`lazy-harness-audit`](skills/lazy-harness-audit/SKILL.md) | Audit and score a project's AI coding-agent harness. |
 | [`lazy-harness-helper`](skills/lazy-harness-helper/SKILL.md) | Improve a project's AI coding-agent harness. |
-| [`lazy-skill-write`](skills/lazy-skill-write/SKILL.md) | Author effective AI skills using the CEVF quality framework. |
-| [`lazy-skill-check`](skills/lazy-skill-check/SKILL.md) | Validate and benchmark AI skills. |
 
 ## Quick start (one-liner)
 
@@ -131,7 +129,7 @@ updates every agent immediately.
 ./install.sh                              # install ALL skills
 ./install.sh gitlab-mr-review             # install one skill
 ./install.sh lazy-go-dev lazy-python-dev  # install several
-./install.sh --targets claude,codex lazy-skill-write
+./install.sh --targets claude,codex lazy-go-dev
 ./install.sh --dry-run --all              # preview without changes
 ./install.sh --force --all                # overwrite existing links
 ```
