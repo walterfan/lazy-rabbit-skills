@@ -1,0 +1,7 @@
+interface:
+  display_name: "Harness Helper"
+  short_description: "Improve an AI coding harness score"
+  default_prompt: "Use $lazy-harness-helper to improve this project's coding-agent harness score."
+
+policy:
+  allow_implicit_invocation: true

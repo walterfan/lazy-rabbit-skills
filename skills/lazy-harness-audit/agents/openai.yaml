@@ -1,0 +1,7 @@
+interface:
+  display_name: "Harness Audit"
+  short_description: "Score a project's AI coding harness"
+  default_prompt: "Use $lazy-harness-audit to audit this project's coding-agent harness and give a 100-point score."
+
+policy:
+  allow_implicit_invocation: true

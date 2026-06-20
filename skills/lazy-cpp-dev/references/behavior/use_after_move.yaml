@@ -1,0 +1,16 @@
+name: use-after-move behavior
+description: Focused behavior case for moved-from object reasoning.
+cases:
+  - id: explain_use_after_move
+    request: "Why does my C++ object act weird after std::move(x)?"
+    expected:
+      - "Explain valid-but-unspecified moved-from state."
+      - "Find reads of moved-from values before reassignment."
+      - "Suggest reassigning, restructuring ownership, or moving at last use."
+
+  - id: review_move_api
+    request: "Review this setter that accepts std::string&& and stores it."
+    expected:
+      - "Check whether pass-by-value would be simpler."
+      - "Check caller object is not read after move."
+      - "Keep repo API style in mind."

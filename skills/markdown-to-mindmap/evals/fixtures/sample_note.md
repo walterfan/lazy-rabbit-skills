@@ -1,0 +1,16 @@
+# Building a Promptfoo Demo
+
+## Goals
+- Explain generation evals
+- Show end-to-end rendering
+
+## Workflow
+- Write the skill
+  - Add parser script
+  - Add render wrapper
+- Add promptfoo configs
+- Verify output
+
+## Risks
+- Path traversal
+- Broken PlantUML

@@ -1,0 +1,17 @@
+prompt: |
+  In a Java backend that uses Spring Boot, MyBatis XML, Spring Security,
+  and secret-manager-style secrets, outline how you would add a secure endpoint for
+  listing secret metadata. Do not write code. Keep the answer concise and focus
+  on layers and safety checks.
+
+setup: []
+
+expect:
+  contains:
+    - "controller"
+    - "service"
+    - "MyBatis"
+    - "@PreAuthorize"
+    - "DTO"
+  max_cost_usd: 0.10
+  max_duration_seconds: 120

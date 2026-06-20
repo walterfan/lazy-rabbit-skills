@@ -1,0 +1,16 @@
+prompt: |
+  Review this proposed Java backend change and list the main risks first:
+  a MyBatis XML mapper uses `${sortField}`, a controller logs the full request
+  object, and an exception message includes a token value. Keep the review
+  concise and security-focused.
+
+setup: []
+
+expect:
+  contains:
+    - "SQL"
+    - "logging"
+    - "token"
+    - "#{"
+  max_cost_usd: 0.10
+  max_duration_seconds: 120

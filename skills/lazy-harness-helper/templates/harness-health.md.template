@@ -1,0 +1,11 @@
+# Harness Health
+
+Use this checklist during PR review, release prep, or a monthly maintenance pass.
+
+- [ ] `AGENTS.md` still matches the current repo layout and commands.
+- [ ] `scripts/agent-check.sh` or equivalent still runs successfully.
+- [ ] CI covers the important local checks.
+- [ ] Approved fixtures or golden examples still represent real business behavior.
+- [ ] Safety rules cover secrets, logs, destructive commands, deployments, migrations, and production data.
+- [ ] Dependency and secret-scan results have been reviewed.
+- [ ] Recent repeated review comments have been converted into docs, checks, or fixtures.

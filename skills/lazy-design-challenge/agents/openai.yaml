@@ -1,0 +1,7 @@
+interface:
+  display_name: "Design Challenge"
+  short_description: "Stress-test designs, then hand off to OpenSpec and PKB"
+  default_prompt: "Use $lazy-design-challenge to challenge this design, reuse any existing PKB or OpenSpec artifacts, and formalize the result into OpenSpec proposal/design/tasks when appropriate."
+
+policy:
+  allow_implicit_invocation: true

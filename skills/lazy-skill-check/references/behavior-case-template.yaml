@@ -1,0 +1,31 @@
+# Template for L3 behavior case.
+#
+# One file per case. File name (without extension) becomes the run output name.
+# All fields except `prompt` are optional.
+
+prompt: |
+  填好 sample/expense.pdf，金额是 1234.56，日期是 2026-04-20。
+
+# Files to copy into the agent's working directory before the run.
+# `from` is relative to the cases directory; `to` is relative to the workdir.
+setup:
+  - from: fixtures/expense_blank.pdf
+    to:   sample/expense.pdf
+
+expect:
+  # Tools the agent MUST use (order does not matter; extra tools allowed).
+  tools_used:
+    - Read
+    - Bash
+
+  # Files that MUST exist under the workdir after the run.
+  files_exist:
+    - sample/expense.pdf
+
+  # Substrings that MUST appear in the final assistant text.
+  contains:
+    - "1234.56"
+
+  # Budget guards. Run fails if exceeded.
+  max_cost_usd: 0.05
+  max_duration_seconds: 60

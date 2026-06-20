@@ -1,0 +1,68 @@
+{
+  "skill": {
+    "name": "TODO-skill-name",
+    "description": "TODO: copy from SKILL.md frontmatter"
+  },
+  "evals": [
+    {
+      "id": "should-trigger-basic",
+      "type": "should_trigger",
+      "prompt": "TODO: a user message that should activate this skill",
+      "expected": "Skill activates and produces output matching postconditions",
+      "expectations": [
+        "Output is non-empty",
+        "Output follows the defined template",
+        "All required sections are present"
+      ]
+    },
+    {
+      "id": "should-trigger-implicit",
+      "type": "should_trigger",
+      "prompt": "TODO: an indirect message that should still trigger the skill",
+      "expected": "Skill activates even without explicit mention",
+      "expectations": [
+        "Skill recognizes implicit trigger",
+        "Output quality matches explicit trigger"
+      ]
+    },
+    {
+      "id": "should-not-trigger",
+      "type": "should_not_trigger",
+      "prompt": "TODO: a message outside scope_in that should NOT trigger this skill",
+      "expected": "Skill does not activate",
+      "expectations": [
+        "No skill-specific output produced",
+        "Normal conversation continues"
+      ]
+    },
+    {
+      "id": "boundary-minimal",
+      "type": "boundary",
+      "prompt": "TODO: minimal valid input",
+      "expected": "Skill produces minimal but complete output",
+      "expectations": [
+        "Output still meets postconditions",
+        "No sections are empty or placeholder"
+      ]
+    },
+    {
+      "id": "boundary-scope-edge",
+      "type": "boundary",
+      "prompt": "TODO: input at the edge of scope_in",
+      "expected": "Skill handles gracefully — processes matching parts or explains limitation",
+      "expectations": [
+        "No silent failure",
+        "User informed of any scope limitations"
+      ]
+    },
+    {
+      "id": "verification-postcondition",
+      "type": "verification",
+      "prompt": "TODO: input that tests a specific postcondition",
+      "expected": "Postcondition is met in output",
+      "expectations": [
+        "TODO: specific measurable check"
+      ]
+    }
+  ]
+}

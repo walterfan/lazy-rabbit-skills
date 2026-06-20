@@ -1,0 +1,51 @@
+# AGENTS.md - PROJECT_NAME
+
+## Project Map
+
+- Purpose: PROJECT_PURPOSE
+- Primary stack: PROJECT_STACK
+- Entry points: ENTRY_POINTS
+- Important docs: DOC_LINKS
+
+## Working Agreements
+
+- Read the relevant code and docs before editing.
+- Keep changes small and reviewable.
+- Preserve public APIs and data contracts unless the task explicitly asks for a breaking change.
+- Do not reformat unrelated files.
+- Ask before touching danger zones: DANGER_ZONES.
+
+## Verification
+
+Use the project wrappers and existing task runner. Do not invent commands.
+
+```bash
+SETUP_COMMAND
+LINT_COMMAND
+TYPECHECK_COMMAND
+TEST_COMMAND
+BUILD_COMMAND
+```
+
+Focused runs:
+
+```bash
+FOCUSED_TEST_COMMANDS
+```
+
+Known gaps:
+
+- MISSING_CHECKS
+
+## Safety
+
+- Never print or commit secrets, tokens, cookies, credentials, private keys, or personal data.
+- Do not add logs containing request bodies, authorization headers, tokens, emails, phone numbers, or payment data.
+- Destructive Git operations, bulk delete/overwrite, deployments, database migrations, and production data access require explicit human approval.
+
+## Done Means
+
+- Relevant tests/checks were run, or skipped checks are explained.
+- Behavior changes include tests, fixtures, or manual verification notes.
+- Risks and compatibility concerns are called out in the final response.
+- Harness docs are updated when commands, top-level directories, APIs, or workflows change.

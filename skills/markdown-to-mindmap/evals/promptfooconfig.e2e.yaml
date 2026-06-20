@@ -1,0 +1,43 @@
+description: End-to-end Markdown to PNG mindmap eval
+
+providers:
+  - id: file://../scripts/render_markdown_mindmap.py
+    label: markdown-mindmap-e2e
+    config:
+      outputDir: .tmp-output
+
+prompts:
+  - "{{ markdown }}"
+
+tests:
+  - description: Sample note renders both puml and png
+    vars:
+      name: sample-note
+      markdown: file://fixtures/sample_note.md
+    assert:
+      - type: contains-json
+      - type: contains
+        value: "\"success\": true"
+      - type: contains
+        value: ".png"
+      - type: contains
+        value: ".puml"
+      - type: regex
+        value: "\"image_bytes\":\\s*[1-9][0-9]*"
+
+  - description: Architecture fixture produces readable plantuml before render
+    vars:
+      name: sample-architecture
+      markdown: file://fixtures/sample_architecture.md
+    assert:
+      - type: contains-json
+      - type: contains
+        value: "\"success\": true"
+      - type: contains
+        value: "API Layer"
+      - type: contains
+        value: "Worker Layer"
+      - type: contains
+        value: "Data Store"
+      - type: regex
+        value: "\"image_bytes\":\\s*[1-9][0-9]*"

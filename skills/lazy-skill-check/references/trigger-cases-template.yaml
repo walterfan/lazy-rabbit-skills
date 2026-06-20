@@ -1,0 +1,39 @@
+# Template for L2 trigger evaluation.
+#
+# Put at least 5 positive (expect: trigger) and 5 negative (expect: no-trigger)
+# cases. Negative cases are the more valuable ones — they catch over-broad
+# descriptions that would steal triggers from other skills.
+#
+# Tips when authoring:
+#   - Positives should cover the whole description surface, not just one verb.
+#   - Negatives should include: similar keywords but different intent,
+#     same domain but different action, and explicit deny patterns.
+
+cases:
+  # --- positives: skill SHOULD trigger ---
+  - prompt: "帮我把 sample/expense.pdf 里的金额字段填成 1234.56"
+    expect: trigger
+  - prompt: "fill out this PDF form and save the result"
+    expect: trigger
+  - prompt: "请在这份 W-2 表格上填入我的 SSN 和地址"
+    expect: trigger
+
+  # --- near-miss positives: description surface must cover these ---
+  - prompt: "I have a scanned form (non-fillable) — can you still type into it?"
+    expect: trigger
+  - prompt: "给这份 AcroForm 表格填几个字段就行"
+    expect: trigger
+
+  # --- negatives: skill should NOT trigger ---
+  - prompt: "读一下这份 PDF 合同的条款"       # reading ≠ filling
+    expect: no-trigger
+  - prompt: "把这份 Word 文档转成 PDF"         # converting ≠ filling
+    expect: no-trigger
+  - prompt: "总结这份 PDF 的主要观点"          # summarizing ≠ filling
+    expect: no-trigger
+
+  # --- hard negatives: similar keywords, different intent ---
+  - prompt: "帮我写一份报销单的 Markdown 草稿"  # same domain, different artifact
+    expect: no-trigger
+  - prompt: "form 表单校验报错，帮我看看 JS 代码"  # 'form' as web form, not PDF
+    expect: no-trigger

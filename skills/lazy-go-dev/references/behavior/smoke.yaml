@@ -1,0 +1,9 @@
+# behavior case for skill: lazy-go-dev
+prompt: "Use when implementing, refactoring, reviewing, explaining, or testing Go code where idiomatic APIs, concurrency safety, nil/interface behavior, slice or channel semantics, SQL safety, or HTTP boundari"
+setup: []
+expect:
+  contains: []            # keywords that must appear in the final output
+  tools_used: []          # tools the skill is supposed to invoke
+  files_exist: []         # files that must exist under the scratch workdir
+  max_cost_usd: 0.10
+  max_duration_seconds: 120

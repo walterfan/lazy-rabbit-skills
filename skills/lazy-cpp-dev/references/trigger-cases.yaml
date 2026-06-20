@@ -1,0 +1,51 @@
+# trigger-cases for skill: lazy-cpp-dev
+#
+# Hand-curated routing checks:
+# - C++ code work should trigger.
+# - Other languages, pure C, deployment, and build-system-only tasks should not.
+# - ISO Core Guidelines rule-ID audits should trigger and be handled locally.
+cases:
+  - id: pos_implement_class
+    prompt: "Help me write a thread-safe LRU cache class in C++20 with unit tests."
+    expect: trigger
+    why: "C++ implementation touching concurrency, class design, and tests."
+
+  - id: pos_review_diff
+    prompt: "Review this C++ MR: I added a worker pool with std::jthread and a shared queue."
+    expect: trigger
+    why: "C++ review with concurrency and lifetime concerns."
+
+  - id: pos_dangling_view
+    prompt: "Why does this function returning std::string_view sometimes give garbage?"
+    expect: trigger
+    why: "Classic C++ lifetime pitfall."
+
+  - id: pos_modernize_legacy
+    prompt: "Modernize this C++98 file: replace naked new/delete with smart pointers."
+    expect: trigger
+    why: "Modernization task."
+
+  - id: pos_core_guideline_audit
+    prompt: "Audit this C++ file rule-by-rule against ISO Core Guidelines and cite each Rule ID."
+    expect: trigger
+    why: "Rule-ID C++ audit is handled directly by lazy-cpp-dev."
+
+  - id: neg_go_review
+    prompt: "Review this Go handler for race conditions and goroutine leaks."
+    expect: no-trigger
+    why: "Not C++."
+
+  - id: neg_cmake_build
+    prompt: "My CMake linker step cannot find libssl. Help me fix CMakeLists.txt."
+    expect: no-trigger
+    why: "Build-system-only task."
+
+  - id: neg_pure_c
+    prompt: "Refactor this C99 driver to use safer string handling."
+    expect: no-trigger
+    why: "Pure C, not C++."
+
+  - id: neg_deploy
+    prompt: "Deploy our C++ service to Kubernetes and roll back if pods crash."
+    expect: no-trigger
+    why: "Deployment/infra work."

@@ -1,0 +1,28 @@
+cases:
+  # Positives: this skill should trigger
+  - prompt: "Implement a Spring Boot controller and service change in our Java secrets-manager repo, using MyBatis XML and safe logging."
+    expect: trigger
+  - prompt: "Review this Java diff for SQL injection, transaction boundaries, and privacy-safe logging."
+    expect: trigger
+  - prompt: "Write unit tests for a Spring Boot service and mapper flow in our Java backend."
+    expect: trigger
+  - prompt: "Explain how this Java controller, service, and MyBatis mapper work together."
+    expect: trigger
+  - prompt: "Fix `@PreAuthorize`, request validation, and secret-manager-style secret handling in this Java service."
+    expect: trigger
+  - prompt: "Our Java scheduled job uses thread pools and external service calls; please review it for async safety and retries."
+    expect: trigger
+
+  # Negatives: similar domains or keywords, different intent
+  - prompt: "Review this Python SDK diff for typing and pytest coverage."
+    expect: no-trigger
+  - prompt: "Deploy our Spring Boot service to Kubernetes and check the pod logs."
+    expect: no-trigger
+  - prompt: "Create a Jira bug for this Java production issue and assign it to me."
+    expect: no-trigger
+  - prompt: "Write a design doc for migrating the service from MyBatis to JPA."
+    expect: no-trigger
+  - prompt: "Build a Vue page for managing secrets and form validation."
+    expect: no-trigger
+  - prompt: "Help me convert this PDF form into Markdown."
+    expect: no-trigger

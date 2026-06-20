@@ -1,0 +1,15 @@
+prompt: |
+  Explain a Java service flow that goes controller -> service -> MyBatis
+  mapper -> external integration client. Mention where validation, exception
+  mapping, authorization, and privacy-safe logging should happen. Keep it brief.
+
+setup: []
+
+expect:
+  contains:
+    - "validation"
+    - "authorization"
+    - "logging"
+    - "exception"
+  max_cost_usd: 0.10
+  max_duration_seconds: 120

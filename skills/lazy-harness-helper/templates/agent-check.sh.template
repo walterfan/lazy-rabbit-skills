@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Keep this fast enough for agents to run before asking for review.
+# Replace every ALL_CAPS_TOKEN with a real project command, or remove the line.
+# Each command should fail-fast (the script aborts on the first non-zero exit).
+
+# Example shape (delete and replace with real commands):
+#   echo "==> lint";       LINT_COMMAND
+#   echo "==> typecheck";  TYPECHECK_COMMAND
+#   echo "==> test";       TEST_COMMAND
+
+CHECK_COMMANDS

@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  memgraph:
+    image: memgraph/memgraph-platform:latest
+    container_name: lazy-memgraph-helper
+    ports:
+      - "7687:7687"
+      - "3000:3000"
+      - "7444:7444"
+    volumes:
+      - mg_lib:/var/lib/memgraph
+      - mg_log:/var/log/memgraph
+      - mg_etc:/etc/memgraph
+    environment:
+      # Development-oriented defaults. Tighten auth and TLS before using this outside local work.
+      MEMGRAPH: "--log-level=INFO"
+    restart: unless-stopped
+
+volumes:
+  mg_lib:
+  mg_log:
+  mg_etc:

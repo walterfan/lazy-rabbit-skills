@@ -1,0 +1,41 @@
+description: Markdown to PlantUML mindmap generation eval
+
+providers:
+  - id: file://../scripts/markdown_to_mindmap.py
+    label: markdown-to-mindmap
+
+prompts:
+  - "{{ markdown }}"
+
+tests:
+  - description: Golden fixture should render to stable PlantUML
+    vars:
+      markdown: file://fixtures/sample_note.md
+    assert:
+      - type: contains
+        value: "@startmindmap"
+      - type: contains
+        value: "@endmindmap"
+      - type: contains
+        value: "* Building a Promptfoo Demo"
+      - type: contains
+        value: "**** Add render wrapper"
+      - type: contains
+        value: "*** Broken PlantUML"
+
+  - description: Architecture fixture keeps major sections and nested bullets
+    vars:
+      markdown: file://fixtures/sample_architecture.md
+    assert:
+      - type: contains
+        value: "* Service Architecture Overview"
+      - type: javascript
+        value: |
+          const text = String(output);
+          const hasAuthentication = text.includes('Authentication');
+          const hasRetryQueue = text.includes('Retry Queue');
+          const hasApiLayer = text.includes('API Layer');
+          const hasWorkerLayer = text.includes('Worker Layer');
+          const hasDataStore = text.includes('Data Store');
+          const nodeLines = text.split('\n').filter((line) => line.startsWith('*'));
+          return hasAuthentication && hasRetryQueue && hasApiLayer && hasWorkerLayer && hasDataStore && nodeLines.length >= 8;

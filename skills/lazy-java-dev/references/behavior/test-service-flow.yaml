@@ -1,0 +1,15 @@
+prompt: |
+  A Spring Boot service change added controller validation, a service-layer
+  transaction, and a MyBatis mapper update. What tests should be added first in
+  a Java repo? Keep the answer short and grouped by layer.
+
+setup: []
+
+expect:
+  contains:
+    - "controller"
+    - "service"
+    - "mapper"
+    - "validation"
+  max_cost_usd: 0.10
+  max_duration_seconds: 120

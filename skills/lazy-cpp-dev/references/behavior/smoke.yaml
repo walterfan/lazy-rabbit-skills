@@ -1,0 +1,22 @@
+name: lazy-cpp-dev smoke behavior
+description: Basic behavior expectations for this skill.
+cases:
+  - id: review_lifetime_bug
+    request: "Review this C++ snippet that returns std::string_view."
+    expected:
+      - "Identify source lifetime and dangling view risk."
+      - "Prefer return-by-value or extending owner lifetime."
+      - "State verification limits if no build/test is available."
+
+  - id: implement_raii_class
+    request: "Implement a small RAII wrapper for a file descriptor."
+    expected:
+      - "No raw owning resource escapes."
+      - "Copy disabled or ownership semantics explicit."
+      - "Move operations and destructor are noexcept when appropriate."
+
+  - id: concurrency_review
+    request: "Review a worker thread queue using mutex and condition_variable."
+    expected:
+      - "Check lock scope, guarded data, stop condition, and join path."
+      - "Mention TSan or deterministic stress tests when relevant."

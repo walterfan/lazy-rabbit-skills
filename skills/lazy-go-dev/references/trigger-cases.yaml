@@ -1,0 +1,35 @@
+# trigger-cases for skill: lazy-go-dev
+# Positive cases (expect: trigger) — user prompts the skill should fire on.
+# Negative cases (expect: no-trigger) — prompts that must NOT fire the skill.
+cases:
+  # --- positives: skill SHOULD trigger ---
+  - prompt: "Review this Go diff for goroutine leaks, race conditions, and missing tests."
+    expect: trigger
+  - prompt: "In this Go repo, help me add a Gin handler and repository method."
+    expect: trigger
+  - prompt: "In this Go snippet, why does the interface nil check fail even though the pointer is nil?"
+    expect: trigger
+  - prompt: "Write table-driven unit tests for this Go file and explain any edge cases."
+    expect: trigger
+  - prompt: "This GORM query in my Go repo works, but I think it has SQL safety and pagination issues. Can you review it?"
+    expect: trigger
+
+  # --- near-miss positives: description surface should still catch these ---
+  - prompt: "In this Go snippet, append behaves strangely; changing one slice mutates another."
+    expect: trigger
+  - prompt: "Please explain this Go file, especially the range loop capture and channel behavior."
+    expect: trigger
+
+  # --- negatives: skill should NOT trigger ---
+  - prompt: "Help me deploy this Go service to Kubernetes and debug the Helm chart."
+    expect: no-trigger
+  - prompt: "Write a design doc for migrating our backend from Go to Rust."
+    expect: no-trigger
+  - prompt: "Review this Python concurrency code for race conditions and mutable default bugs."
+    expect: no-trigger
+
+  # --- hard negatives: similar keywords, different intent ---
+  - prompt: "Can you explain Go language history and compare it with Java for a blog post?"
+    expect: no-trigger
+  - prompt: "Fix this Java handler, repository, and SQL transaction bug."
+    expect: no-trigger
