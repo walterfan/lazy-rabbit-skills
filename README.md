@@ -1,5 +1,7 @@
 # lazy-rabbit-skills
 
+English | [中文](README_zh-CN.md)
+
 Lazy Rabbit's personal collection of AI skills.
 
 Each skill lives under `skills/<name>/SKILL.md` and follows the
@@ -13,60 +15,60 @@ agent can load on demand.
 
 | Skill | Description |
 |-------|-------------|
-| `agents-md-generate` | Create, refresh, or migrate `AGENTS.md` onboarding files for coding agents. |
-| `project-knowledge-base` | Build and maintain a Project Knowledge Base (Markdown/MyST, C4, ADRs, runbooks, bilingual Sphinx HTML). |
-| `pkb-collect` | Import and ingest external knowledge into an existing Project Knowledge Base. |
-| `pkb-refer` | Consult the Project Knowledge Base before answering. |
-| `feature-design-doc` | Generate feature-level technical design specs from a practical template. |
-| `microservice-design-doc` | Generate structured design documents for microservice projects. |
-| `write-user-story` | Write well-formed agile user stories. |
+| [`agents-md-generate`](skills/agents-md-generate/SKILL.md) | Create, refresh, or migrate `AGENTS.md` onboarding files for coding agents. |
+| [`project-knowledge-base`](skills/project-knowledge-base/SKILL.md) | Build and maintain a Project Knowledge Base (Markdown/MyST, C4, ADRs, runbooks, bilingual Sphinx HTML). |
+| [`pkb-collect`](skills/pkb-collect/SKILL.md) | Import and ingest external knowledge into an existing Project Knowledge Base. |
+| [`pkb-refer`](skills/pkb-refer/SKILL.md) | Consult the Project Knowledge Base before answering. |
+| [`feature-design-doc`](skills/feature-design-doc/SKILL.md) | Generate feature-level technical design specs from a practical template. |
+| [`microservice-design-doc`](skills/microservice-design-doc/SKILL.md) | Generate structured design documents for microservice projects. |
+| [`write-user-story`](skills/write-user-story/SKILL.md) | Write well-formed agile user stories. |
 
 ### Diagrams & brainstorming
 
 | Skill | Description |
 |-------|-------------|
-| `diagram-render` | Render diagram-as-code (PlantUML, Mermaid, Graphviz) to PNG/SVG. |
-| `brainstorm-mindmap` | Turn an idea, problem, or article into a deep-thinking mind map. |
-| `markdown-to-mindmap` | Convert Markdown notes/outlines into a PlantUML mind map image. |
+| [`diagram-render`](skills/diagram-render/SKILL.md) | Render diagram-as-code (PlantUML, Mermaid, Graphviz) to PNG/SVG. |
+| [`brainstorm-mindmap`](skills/brainstorm-mindmap/SKILL.md) | Turn an idea, problem, or article into a deep-thinking mind map. |
+| [`markdown-to-mindmap`](skills/markdown-to-mindmap/SKILL.md) | Convert Markdown notes/outlines into a PlantUML mind map image. |
 
 ### Language-specific development
 
 | Skill | Description |
 |-------|-------------|
-| `lazy-cpp-dev` | C++ development, review, and modernization helper. |
-| `cpp-core-guide` | C++ Core Guidelines reference and audit helper. |
-| `lazy-go-dev` | Idiomatic Go development and review helper. |
-| `lazy-java-dev` | Spring Boot / MyBatis Java backend development and review helper. |
-| `lazy-python-dev` | Python library-style development helper (Poetry, Ruff, pytest). |
+| [`lazy-cpp-dev`](skills/lazy-cpp-dev/SKILL.md) | C++ development, review, and modernization helper. |
+| [`cpp-core-guide`](skills/cpp-core-guide/SKILL.md) | C++ Core Guidelines reference and audit helper. |
+| [`lazy-go-dev`](skills/lazy-go-dev/SKILL.md) | Idiomatic Go development and review helper. |
+| [`lazy-java-dev`](skills/lazy-java-dev/SKILL.md) | Spring Boot / MyBatis Java backend development and review helper. |
+| [`lazy-python-dev`](skills/lazy-python-dev/SKILL.md) | Python library-style development helper (Poetry, Ruff, pytest). |
 
 ### Code review & GitLab
 
 | Skill | Description |
 |-------|-------------|
-| `gitlab-mr-review` | Review a GitLab Merge Request from a URL or branch comparison. |
-| `gitlab-mr-issue` | Turn actionable MR comments into GitLab issues. |
-| `gitlab-mr-split` | Split a large MR into smaller, safer sub-MRs. |
-| `gitlab-mr-testcase` | Generate test cases for a GitLab MR from its diff and a design spec. |
+| [`gitlab-mr-review`](skills/gitlab-mr-review/SKILL.md) | Review a GitLab Merge Request from a URL or branch comparison. |
+| [`gitlab-mr-issue`](skills/gitlab-mr-issue/SKILL.md) | Turn actionable MR comments into GitLab issues. |
+| [`gitlab-mr-split`](skills/gitlab-mr-split/SKILL.md) | Split a large MR into smaller, safer sub-MRs. |
+| [`gitlab-mr-testcase`](skills/gitlab-mr-testcase/SKILL.md) | Generate test cases for a GitLab MR from its diff and a design spec. |
 
 ### Ops & troubleshooting
 
 | Skill | Description |
 |-------|-------------|
-| `lazy-network-doctor` | Local network troubleshooting (ping/dig/netstat/etc). |
-| `lazy-memgraph-helper` | Work with Memgraph graph databases. |
-| `lazy-sqlite-helper` | Work with SQLite databases. |
+| [`lazy-network-doctor`](skills/lazy-network-doctor/SKILL.md) | Local network troubleshooting (ping/dig/netstat/etc). |
+| [`lazy-memgraph-helper`](skills/lazy-memgraph-helper/SKILL.md) | Work with Memgraph graph databases. |
+| [`lazy-sqlite-helper`](skills/lazy-sqlite-helper/SKILL.md) | Work with SQLite databases. |
 
 ### Process, planning & quality
 
 | Skill | Description |
 |-------|-------------|
-| `lazy-scrum-team` | All-in-one AI virtual Scrum team covering the sprint lifecycle. |
-| `lazy-design-challenge` | Stress-test technical designs by challenging assumptions one branch at a time. |
-| `socratic-design-review` | Review a design with disciplined Socratic questioning (nine lenses, Paul's six types, CBT disputation, Zen 话头) — asks, never answers. |
-| `lazy-harness-audit` | Audit and score a project's AI coding-agent harness. |
-| `lazy-harness-helper` | Improve a project's AI coding-agent harness. |
-| `lazy-skill-write` | Author effective AI skills using the CEVF quality framework. |
-| `lazy-skill-check` | Validate and benchmark AI skills. |
+| [`lazy-scrum-team`](skills/lazy-scrum-team/SKILL.md) | All-in-one AI virtual Scrum team covering the sprint lifecycle. |
+| [`lazy-design-challenge`](skills/lazy-design-challenge/SKILL.md) | Stress-test technical designs by challenging assumptions one branch at a time. |
+| [`socratic-design-review`](skills/socratic-design-review/SKILL.md) | Review a design with disciplined Socratic questioning (nine lenses, Paul's six types, CBT disputation, Zen 话头) — asks, never answers. |
+| [`lazy-harness-audit`](skills/lazy-harness-audit/SKILL.md) | Audit and score a project's AI coding-agent harness. |
+| [`lazy-harness-helper`](skills/lazy-harness-helper/SKILL.md) | Improve a project's AI coding-agent harness. |
+| [`lazy-skill-write`](skills/lazy-skill-write/SKILL.md) | Author effective AI skills using the CEVF quality framework. |
+| [`lazy-skill-check`](skills/lazy-skill-check/SKILL.md) | Validate and benchmark AI skills. |
 
 ## Quick start (one-liner)
 
