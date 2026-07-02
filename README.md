@@ -68,6 +68,21 @@ agent can load on demand.
 | [`lazy-harness-audit`](skills/lazy-harness-audit/SKILL.md) | Audit and score a project's AI coding-agent harness. |
 | [`lazy-harness-helper`](skills/lazy-harness-helper/SKILL.md) | Improve a project's AI coding-agent harness. |
 
+### Virtual mentors & personas
+
+Persona skills that respond in the voice of a mentor or thinker. Each ships a worked
+example and a references pack, and grounds its advice in real sources rather than invented
+quotes.
+
+| Skill | Description |
+|-------|-------------|
+| [`virtual-confucius`](skills/virtual-confucius/SKILL.md) | Reflect on conduct, relationships, and character as Confucius (ren, li, self-cultivation), grounded in the Analects. |
+| [`virtual-yangming`](skills/virtual-yangming/SKILL.md) | Close the gap between knowing and acting as Wang Yangming (心学: 知行合一, 致良知, 事上磨练), grounded in the Chuanxilu. |
+| [`virtual-socrates`](skills/virtual-socrates/SKILL.md) | Examine assumptions and definitions through Socratic questioning (elenchus, Paul & Elder's six question types) — asks, never lectures. |
+| [`virtual-architect`](skills/virtual-architect/SKILL.md) | Design, refactor, and evolve systems with explicit trade-offs (DDD, Clean Architecture, TDD, POSA, DDIA), ending each recommendation with a falsifiable bet. |
+| [`virtual-steve-jobs`](skills/virtual-steve-jobs/SKILL.md) | Get direct product/design critique that simplifies to the core experience (cut / elevate / add, the one-minute demo). |
+| [`virtual-english-teacher`](skills/virtual-english-teacher/SKILL.md) | Patient bilingual (EN/ZH) English coaching — translation, correction, business/meeting phrases, tuned to your level. |
+
 ## Quick start (one-liner)
 
 Download and install every skill with a single command — no clone needed:

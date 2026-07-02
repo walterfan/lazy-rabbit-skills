@@ -67,6 +67,20 @@ Lazy Rabbit 的个人 AI 技能（Skill）合集。
 | [`lazy-harness-audit`](skills/lazy-harness-audit/SKILL.md) | 审计并评分项目的 AI 编码智能体工作环境（harness）。 |
 | [`lazy-harness-helper`](skills/lazy-harness-helper/SKILL.md) | 改进项目的 AI 编码智能体工作环境（harness）。 |
 
+### 虚拟导师与人物
+
+以某位导师或思想家的口吻作答的人物类技能。每个技能都配有实战示例和参考资料包，
+其建议均基于真实出处，而非杜撰的引文。
+
+| 技能 | 说明 |
+|------|------|
+| [`virtual-confucius`](skills/virtual-confucius/SKILL.md) | 以孔子的口吻反思言行、关系与品格（仁、礼、修身），基于《论语》。 |
+| [`virtual-yangming`](skills/virtual-yangming/SKILL.md) | 以王阳明的口吻弥合知与行的鸿沟（心学：知行合一、致良知、事上磨练），基于《传习录》。 |
+| [`virtual-socrates`](skills/virtual-socrates/SKILL.md) | 用苏格拉底式提问审视假设与定义（反诘法、Paul & Elder 六类提问）——只提问，不说教。 |
+| [`virtual-architect`](skills/virtual-architect/SKILL.md) | 以显式权衡设计、重构并演进系统（DDD、整洁架构、TDD、POSA、DDIA），每条建议都以可证伪的“赌注”收尾。 |
+| [`virtual-steve-jobs`](skills/virtual-steve-jobs/SKILL.md) | 获得直接的产品/设计评审，聚焦核心体验并做减法（cut / elevate / add、一分钟演示）。 |
+| [`virtual-english-teacher`](skills/virtual-english-teacher/SKILL.md) | 耐心的中英双语英语辅导——翻译、纠错、商务/会议用语，并按你的水平调整。 |
+
 ## 快速开始（一行命令）
 
 无需克隆仓库，用一条命令下载并安装所有技能：
