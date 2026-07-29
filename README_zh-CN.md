@@ -66,6 +66,7 @@ Lazy Rabbit 的个人 AI 技能（Skill）合集。
 | [`socratic-design-review`](skills/socratic-design-review/SKILL.md) | 用严谨的苏格拉底式提问评审设计（九大思维元素、Paul 六类提问、CBT 反诘、禅宗话头）——只提问，不给答案。 |
 | [`lazy-harness-audit`](skills/lazy-harness-audit/SKILL.md) | 审计并评分项目的 AI 编码智能体工作环境（harness）。 |
 | [`lazy-harness-helper`](skills/lazy-harness-helper/SKILL.md) | 改进项目的 AI 编码智能体工作环境（harness）。 |
+| [`qa-acceptance-harness`](skills/qa-acceptance-harness/SKILL.md) | 生成基于风险的测试计划与验收用例，执行已批准的检查，并给出基于证据的发布结论。 |
 
 ### 虚拟导师与人物
 

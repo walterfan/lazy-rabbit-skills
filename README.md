@@ -67,6 +67,7 @@ agent can load on demand.
 | [`socratic-design-review`](skills/socratic-design-review/SKILL.md) | Review a design with disciplined Socratic questioning (nine lenses, Paul's six types, CBT disputation, Zen 话头) — asks, never answers. |
 | [`lazy-harness-audit`](skills/lazy-harness-audit/SKILL.md) | Audit and score a project's AI coding-agent harness. |
 | [`lazy-harness-helper`](skills/lazy-harness-helper/SKILL.md) | Improve a project's AI coding-agent harness. |
+| [`qa-acceptance-harness`](skills/qa-acceptance-harness/SKILL.md) | Generate risk-based test plans and acceptance cases, execute approved checks, and issue evidence-based release verdicts. |
 
 ### Virtual mentors & personas
 

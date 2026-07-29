@@ -17,10 +17,16 @@
 # Examples:
 #   ./install.sh                              # install ALL skills
 #   ./install.sh --all                        # install ALL skills
-#   ./install.sh gitlab-mr-review             # install one skill
+#   ./install.sh gitlab-mr-review             # install one skill by name
+#   ./install.sh ./skills/cpp-code-review     # install one skill by path
 #   ./install.sh lazy-go-dev lazy-python-dev  # install several skills
 #   ./install.sh --targets claude,codex gitlab-mr-review
+#   ./install.sh --targets agents ./skills/cpp-code-review
 #   ./install.sh --dry-run --all
+#
+# Skill arguments may be a bare name (looked up under skills/) or a path
+# (./skills/<name>, skills/<name>, or an absolute path). Either way the skill
+# must exist under this repo's skills/ directory.
 #
 # Options:
 #   --all              Install every skill under skills/ (default when no skill given)
@@ -51,7 +57,7 @@ warn() { echo -e "${YELLOW}[WARN]${NC} $*"; }
 err()  { echo -e "${RED}[ERROR]${NC} $*" >&2; }
 dry()  { echo -e "${CYAN}[DRY-RUN]${NC} $*"; }
 
-usage() { sed -n '3,38p' "$0" | sed 's/^# \{0,1\}//'; exit "${1:-0}"; }
+usage() { sed -n '3,36p' "$0" | sed 's/^# \{0,1\}//'; exit "${1:-0}"; }
 
 # --- map a target name to its skills directory ---
 target_dir_for() {
@@ -93,16 +99,48 @@ if $INSTALL_ALL || [[ ${#REQUESTED_SKILLS[@]} -eq 0 ]]; then
         fi
     done
 else
-    for name in "${REQUESTED_SKILLS[@]}"; do
-        src="$SKILLS_DIR/$name"
+    for arg in "${REQUESTED_SKILLS[@]}"; do
+        # Accept either a bare skill name (e.g. cpp-code-review) or a path
+        # (e.g. ./skills/cpp-code-review, skills/cpp-code-review, or an
+        # absolute path). Paths are resolved and their basename is used.
+        if [[ "$arg" == */* || "$arg" == "." || "$arg" == ".." ]]; then
+            # Path form: resolve to an absolute directory.
+            abs="$(cd "$arg" 2>/dev/null && pwd || true)"
+            if [[ -z "$abs" ]]; then
+                err "Skill path not found: $arg"
+                exit 1
+            fi
+            name="$(basename "$abs")"
+            src="$abs"
+        else
+            # Name form: look it up under the repo skills/ directory.
+            name="$arg"
+            src="$SKILLS_DIR/$name"
+        fi
+
         if [[ ! -d "$src" ]]; then
-            err "Skill not found: $name (expected $src)"
+            err "Skill not found: $arg (expected $src)"
             exit 1
         fi
         if [[ ! -f "$src/SKILL.md" && ! -f "$src/skill.md" ]]; then
-            err "Not a valid skill (no SKILL.md): $name"
+            err "Not a valid skill (no SKILL.md): $arg"
             exit 1
         fi
+
+        # The canonical link points at the repo skills/ copy. Warn if a path
+        # argument resolves outside this repo's skills/ directory.
+        if [[ "$src" != "$SKILLS_DIR/$name" ]]; then
+            canon_src="$(cd "$src" && pwd)"
+            expected="$(cd "$SKILLS_DIR" 2>/dev/null && pwd)/$name"
+            if [[ "$canon_src" != "$expected" ]]; then
+                warn "Skill '$name' resolves to $canon_src, not $expected — using the repo copy at $expected if it exists"
+                if [[ ! -d "$expected" ]]; then
+                    err "No repo copy at $expected. Move/copy the skill under $SKILLS_DIR first."
+                    exit 1
+                fi
+            fi
+        fi
+
         SKILLS+=("$name")
     done
 fi
@@ -191,6 +229,10 @@ for name in "${SKILLS[@]}"; do
     for target in "${TARGET_LIST[@]}"; do
         target="$(echo "$target" | xargs)"
         [[ -z "$target" ]] && continue
+        # 'agents' is the canonical location itself — already linked in step 1.
+        if [[ "$target" == "agents" ]]; then
+            continue
+        fi
         tdir="$(target_dir_for "$target")"
         if link_into "$tdir/$name" "$canonical"; then
             $DRY_RUN || info "  $tdir/$name -> ~/.agents/skills/$name"
