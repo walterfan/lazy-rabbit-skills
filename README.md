@@ -55,8 +55,15 @@ agent can load on demand.
 | Skill | Description |
 |-------|-------------|
 | [`lazy-network-doctor`](skills/lazy-network-doctor/SKILL.md) | Local network troubleshooting (ping/dig/netstat/etc). |
+| [`lazy-tls-doctor`](skills/lazy-tls-doctor/SKILL.md) | Diagnose HTTPS/TLS failures with per-certificate detail tables, certificate-chain and DNS diagrams, and copy/paste `openssl`/`dig` commands; assign blame to the server, trust store, proxy, or DNS. |
 | [`lazy-memgraph-helper`](skills/lazy-memgraph-helper/SKILL.md) | Work with Memgraph graph databases. |
 | [`lazy-sqlite-helper`](skills/lazy-sqlite-helper/SKILL.md) | Work with SQLite databases. |
+
+`lazy-tls-doctor` reports the negotiated TLS connection, certificate identity and
+validity fields (`notBefore`, `notAfter`, SAN, issuer, key and extension data),
+the server-sent certificate chain, resolver/application DNS differences, and
+manual commands using `openssl ... </dev/null` and `dig` for independent
+verification.
 
 ### Process, planning & quality
 

@@ -54,6 +54,7 @@ Lazy Rabbit 的个人 AI 技能（Skill）合集。
 | 技能 | 说明 |
 |------|------|
 | [`lazy-network-doctor`](skills/lazy-network-doctor/SKILL.md) | 本地网络排障（ping/dig/netstat 等）。 |
+| [`lazy-tls-doctor`](skills/lazy-tls-doctor/SKILL.md) | 诊断 HTTPS 证书校验失败，判定责任方（服务端、信任库、代理劫持还是 DNS）。 |
 | [`lazy-memgraph-helper`](skills/lazy-memgraph-helper/SKILL.md) | 操作 Memgraph 图数据库。 |
 | [`lazy-sqlite-helper`](skills/lazy-sqlite-helper/SKILL.md) | 操作 SQLite 数据库。 |
 
