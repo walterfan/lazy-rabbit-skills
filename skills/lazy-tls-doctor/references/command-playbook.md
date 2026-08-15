@@ -5,15 +5,15 @@ Raw commands for when the script is unavailable, plus how to read the output.
 ## The one command that usually settles it
 
 ```bash
-echo | openssl s_client -connect api.example.com:443 \
-  -servername api.example.com 2>&1 \
+openssl s_client -connect api.example.com:443 \
+  -servername api.example.com </dev/null 2>&1 \
   | grep -E "subject=|issuer=|Verify return code"
 ```
 
 Both flags matter:
 
 - `-servername` sends SNI. Without it, a host serving many sites may hand back an unrelated certificate and send you chasing a phantom mismatch.
-- `echo |` supplies EOF so the command exits instead of hanging.
+- `</dev/null` supplies EOF so the command exits instead of waiting for interactive input.
 
 Read the **issuer**. The subject is almost always the name you asked for; the issuer tells you who signed it.
 
@@ -22,9 +22,9 @@ Read the **issuer**. The subject is almost always the name you asked for; the is
 `s_client` does not check that the certificate matches the hostname unless you ask:
 
 ```bash
-echo | openssl s_client -connect api.example.com:443 \
+openssl s_client -connect api.example.com:443 \
   -servername api.example.com \
-  -verify_hostname api.example.com 2>&1 \
+  -verify_hostname api.example.com </dev/null 2>&1 \
   | grep -E "verify error|Verify return code"
 ```
 
@@ -33,8 +33,8 @@ Without `-verify_hostname`, a certificate issued for a completely different host
 ## See the whole chain
 
 ```bash
-echo | openssl s_client -connect api.example.com:443 \
-  -servername api.example.com -showcerts 2>&1 \
+openssl s_client -connect api.example.com:443 \
+  -servername api.example.com -showcerts </dev/null 2>&1 \
   | grep -E "^ [0-9] s:|^ *i:"
 ```
 
@@ -57,8 +57,8 @@ A single entry means the server sent leaf-only. What that implies depends on the
 If you suspect a proxy and can get its CA certificate:
 
 ```bash
-echo | openssl s_client -connect api.example.com:443 \
-  -servername api.example.com -CAfile /path/to/proxy-ca.pem 2>&1 \
+openssl s_client -connect api.example.com:443 \
+  -servername api.example.com -CAfile /path/to/proxy-ca.pem </dev/null 2>&1 \
   | grep "Verify return code"
 ```
 
@@ -67,8 +67,8 @@ Flipping from a failure code to `0 (ok)` proves that CA signed the chain. The ce
 ## Through an explicit proxy
 
 ```bash
-echo | openssl s_client -proxy 10.0.0.1:8080 \
-  -connect api.example.com:443 -servername api.example.com
+openssl s_client -proxy 10.0.0.1:8080 \
+  -connect api.example.com:443 -servername api.example.com </dev/null
 ```
 
 ## Verify a chain offline

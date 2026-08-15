@@ -21,6 +21,7 @@ import json
 import os
 import re
 import shutil
+import shlex
 import socket
 import ssl
 import subprocess
@@ -133,6 +134,17 @@ class ChainCert:
     depth: int
     subject: str
     issuer: str
+    serial_number: str = ""
+    version: str = ""
+    signature_algorithm: str = ""
+    public_key: str = ""
+    not_before: str = ""
+    not_after: str = ""
+    san_entries: list[str] = field(default_factory=list)
+    basic_constraints: str = ""
+    key_usage: str = ""
+    extended_key_usage: str = ""
+    sha256_fingerprint: str = ""
 
     @property
     def self_signed(self) -> bool:
@@ -151,6 +163,8 @@ class ChainResult:
     not_before: str = ""
     not_after: str = ""
     sans: list[str] = field(default_factory=list)
+    tls_version: str = ""
+    cipher: str = ""
     error: str = ""
 
     @property
@@ -243,6 +257,111 @@ def _leaf_details(raw: str) -> tuple[str, str, list[str]]:
     return nb, na, sans
 
 
+def _certificate_pems(raw: str) -> list[str]:
+    return re.findall(
+        r"-----BEGIN CERTIFICATE-----.*?-----END CERTIFICATE-----", raw, re.S
+    )
+
+
+def _extension_value(text: str, heading: str) -> str:
+    """Read an X509v3 extension value from openssl x509 -text output."""
+    extension_headers = (
+        "X509v3 ",
+        "Authority Information Access:",
+        "CRL Distribution Points:",
+        "Certificate Policies:",
+        "CT Precertificate SCTs:",
+        "Netscape Cert Type:",
+        "Signature Algorithm:",
+        "Subject:",
+        "Issuer:",
+    )
+    lines = text.splitlines()
+    for index, line in enumerate(lines):
+        if not line.strip().startswith(f"{heading}:"):
+            continue
+        values: list[str] = []
+        for following in lines[index + 1:]:
+            stripped = following.strip()
+            if not stripped:
+                break
+            if stripped.startswith(extension_headers):
+                break
+            if stripped.lower() == "critical":
+                continue
+            values.append(stripped)
+        return " ".join(values)
+    return ""
+
+
+def _certificate_details(pem: str) -> dict[str, Any]:
+    """Extract displayable certificate metadata from one PEM certificate."""
+    rc, out, _ = _run(
+        [
+            "openssl", "x509", "-noout", "-serial", "-subject", "-issuer",
+            "-dates", "-nameopt", "RFC2253", "-fingerprint", "-sha256", "-text",
+        ],
+        stdin=pem,
+    )
+    if rc != 0:
+        return {}
+
+    def line_value(prefix: str) -> str:
+        for line in out.splitlines():
+            if line.startswith(prefix):
+                return line.split("=", 1)[1].strip()
+        return ""
+
+    version_match = re.search(r"^\s*Version:\s*(.+)$", out, re.M)
+    signature_match = re.search(r"^\s*Signature Algorithm:\s*(.+)$", out, re.M)
+    key_algorithm_match = re.search(r"^\s*Public Key Algorithm:\s*(.+)$", out, re.M)
+    key_size_match = re.search(r"^\s*Public-Key:\s*\(([^)]+)\)", out, re.M)
+    key_algorithm = key_algorithm_match.group(1).strip() if key_algorithm_match else ""
+    key_size = key_size_match.group(1).strip() if key_size_match else ""
+    public_key = key_algorithm
+    if key_size:
+        public_key = f"{public_key} ({key_size})" if public_key else key_size
+
+    san_text = _extension_value(out, "X509v3 Subject Alternative Name")
+    return {
+        "serial_number": line_value("serial="),
+        "version": version_match.group(1).strip() if version_match else "",
+        "subject": line_value("subject="),
+        "issuer": line_value("issuer="),
+        "signature_algorithm": signature_match.group(1).strip() if signature_match else "",
+        "public_key": public_key,
+        "not_before": line_value("notBefore="),
+        "not_after": line_value("notAfter="),
+        "san_entries": [part.strip() for part in san_text.split(",") if part.strip()],
+        "basic_constraints": _extension_value(out, "X509v3 Basic Constraints"),
+        "key_usage": _extension_value(out, "X509v3 Key Usage"),
+        "extended_key_usage": _extension_value(out, "X509v3 Extended Key Usage"),
+        "sha256_fingerprint": line_value("sha256 Fingerprint="),
+    }
+
+
+def _transport_details(raw: str) -> tuple[str, str]:
+    """Extract the negotiated TLS protocol and cipher from s_client output."""
+    version_match = re.search(r"\bProtocol(?: version)?\s*:\s*(\S+)", raw)
+    if version_match:
+        version = version_match.group(1)
+    else:
+        version_match = re.search(r"\bNew,\s*(TLSv[0-9.]+),", raw)
+        version = version_match.group(1) if version_match else ""
+
+    cipher = ""
+    for pattern in (
+        r"\bCiphersuite\s*:\s*(\S+)",
+        r"\bCipher\s+is\s+(\S+)",
+        r"\bCipher\s*:\s*(\S+)",
+    ):
+        cipher_match = re.search(pattern, raw)
+        if cipher_match:
+            cipher = cipher_match.group(1)
+            break
+    return version, cipher
+
+
 def get_chain(
     host: str,
     port: int = 443,
@@ -269,7 +388,20 @@ def get_chain(
 
     res.connected = True
     res.certs, res.verify_code, res.verify_text = certs, code, text
-    res.not_before, res.not_after, res.sans = _leaf_details(raw)
+    for cert, pem in zip(res.certs, _certificate_pems(raw)):
+        for name, value in _certificate_details(pem).items():
+            setattr(cert, name, value)
+
+    fallback_before, fallback_after, fallback_sans = _leaf_details(raw)
+    if res.leaf:
+        res.not_before = res.leaf.not_before or fallback_before
+        res.not_after = res.leaf.not_after or fallback_after
+        res.sans = [
+            entry.split(":", 1)[1]
+            for entry in res.leaf.san_entries
+            if entry.startswith("DNS:") and ":" in entry
+        ] or fallback_sans
+    res.tls_version, res.cipher = _transport_details(raw)
     return res
 
 
@@ -694,18 +826,18 @@ sleep 1
 
 echo
 echo "=== 1. What the client sees (the failure) ==="
-echo | openssl s_client -connect "127.0.0.1:$PORT" -servername "$TARGET" 2>&1 \
+openssl s_client -connect "127.0.0.1:$PORT" -servername "$TARGET" </dev/null 2>&1 \
   | grep -E "verify error|subject=|issuer=|Verify return code" || true
 
 echo
 echo "=== 2. The issuer names the culprit ==="
-echo | openssl s_client -connect "127.0.0.1:$PORT" -servername "$TARGET" 2>&1 \
+openssl s_client -connect "127.0.0.1:$PORT" -servername "$TARGET" </dev/null 2>&1 \
   | openssl x509 -noout -issuer -subject -dates 2>/dev/null
 
 echo
 echo "=== 3. Proof: the proxy CA verifies it (expect code 0) ==="
-echo | openssl s_client -connect "127.0.0.1:$PORT" -servername "$TARGET" \
-  -CAfile proxyCA.crt 2>&1 | grep -E "Verify return code"
+openssl s_client -connect "127.0.0.1:$PORT" -servername "$TARGET" \
+  -CAfile proxyCA.crt </dev/null 2>&1 | grep -E "Verify return code"
 
 echo
 echo "CA kept at: $WORK/proxyCA.crt"
@@ -744,6 +876,130 @@ def _fmt_chain(chain: ChainResult) -> str:
     return "\n".join(lines)
 
 
+def _display(value: Any, limit: int = 240) -> str:
+    """Make externally sourced text safe and bounded for terminal diagrams."""
+    clean = "".join(ch if ch.isprintable() or ch == "\t" else "?" for ch in str(value))
+    if len(clean) > limit:
+        return clean[: limit - 3] + "..."
+    return clean
+
+
+def _cert_role(cert: ChainCert, index: int) -> str:
+    if cert.self_signed:
+        return "root"
+    return "leaf" if index == 0 else "intermediate"
+
+
+def _fmt_certificate_table(chain: ChainResult) -> str:
+    if not chain.connected:
+        return f"certificate table unavailable: {_display(chain.error or 'no TLS certificate received')}"
+    if not chain.certs:
+        return "certificate table unavailable: no certificates parsed"
+
+    lines = [
+        "| depth | role | field | value |",
+        "|---:|---|---|---|",
+    ]
+    fields = (
+        ("Subject", "subject"),
+        ("Issuer", "issuer"),
+        ("Serial number", "serial_number"),
+        ("X.509 version", "version"),
+        ("Signature algorithm", "signature_algorithm"),
+        ("Public key", "public_key"),
+        ("Valid from (notBefore)", "not_before"),
+        ("Valid to (notAfter)", "not_after"),
+        ("SAN", "san_entries"),
+        ("Basic constraints", "basic_constraints"),
+        ("Key usage", "key_usage"),
+        ("Extended key usage", "extended_key_usage"),
+        ("SHA-256 fingerprint", "sha256_fingerprint"),
+    )
+    for index, cert in enumerate(chain.certs):
+        role = _cert_role(cert, index)
+        for label, name in fields:
+            value = getattr(cert, name)
+            if isinstance(value, list):
+                value = ", ".join(value)
+            cell = _display(value or "(not present)", 360).replace("|", r"\|")
+            lines.append(f"| {cert.depth} | {role} | {label} | {cell} |")
+    return "\n".join(lines)
+
+
+def _tls_info(chain: ChainResult) -> dict[str, Any]:
+    leaf = chain.leaf
+    return {
+        "domain": chain.servername,
+        "port": chain.port,
+        "connection_target": chain.host,
+        "sni": chain.servername,
+        "connected": chain.connected,
+        "tls_version": chain.tls_version or None,
+        "cipher": chain.cipher or None,
+        "certificate_subject": leaf.subject if leaf else None,
+        "certificate_issuer": leaf.issuer if leaf else None,
+        "valid_from": chain.not_before or None,
+        "valid_to": chain.not_after or None,
+        "sans": chain.sans,
+        "chain_length": len(chain.certs),
+        "verification": {
+            "code": chain.verify_code,
+            "text": chain.verify_text or None,
+        },
+        "error": chain.error or None,
+    }
+
+
+def _fmt_tls_info(chain: ChainResult) -> str:
+    info = _tls_info(chain)
+    sans = ", ".join(info["sans"]) if info["sans"] else "(none found)"
+    verification = info["verification"]
+    verify_text = verification["text"] or "not available"
+    lines = [
+        f"  domain        : {_display(info['domain'])}",
+        f"  port          : {info['port']}",
+        f"  connection    : {_display(info['connection_target'])}",
+        f"  SNI           : {_display(info['sni'])}",
+        f"  TLS version   : {_display(info['tls_version'] or 'not negotiated')}",
+        f"  cipher        : {_display(info['cipher'] or 'not negotiated')}",
+        f"  certificate   : {_display(info['certificate_subject'] or 'not received')}",
+        f"  issuer        : {_display(info['certificate_issuer'] or 'not available')}",
+        f"  validity      : {_display(info['valid_from'] or '?')}  ->  {_display(info['valid_to'] or '?')}",
+        f"  SAN           : {_display(sans)}",
+        f"  chain length  : {info['chain_length']}",
+        f"  verification  : {verification['code']} ({_display(verify_text)})",
+    ]
+    if info["error"]:
+        lines.append(f"  error         : {_display(info['error'])}")
+    return "\n".join(lines)
+
+
+def _fmt_chain_diagram(chain: ChainResult) -> str:
+    if not chain.connected:
+        return f"  unavailable: {_display(chain.error or 'no TLS certificate received')}"
+    if not chain.certs:
+        return "  unavailable: no certificates parsed"
+
+    lines = [
+        f"  client SNI: {_display(chain.servername)}",
+        "       |",
+        "       v",
+    ]
+    for index, cert in enumerate(chain.certs):
+        role = _cert_role(cert, index)
+        suffix = " (self-signed root)" if cert.self_signed else ""
+        lines.append(f"  [{cert.depth}] {role}: {_display(cert.subject)}{suffix}")
+        if cert.self_signed:
+            break
+        lines.append(f"       | signed by: {_display(cert.issuer)}")
+        lines.append("       v")
+
+    last = chain.certs[-1]
+    if not last.self_signed:
+        lines.append(f"  [issuer not sent] {_display(last.issuer)}")
+    return "\n".join(lines)
+
+
 def _fmt_verdict(v: dict[str, Any]) -> str:
     lines = [
         f"  verdict   : {v['verdict']}  (confidence: {v['confidence']})",
@@ -766,6 +1022,93 @@ def _fmt_dns(d: dict[str, Any]) -> str:
             lines.append(f"  {'/etc/hosts':<18} {e}")
     for n in d["notes"]:
         lines.append(f"  note: {n}")
+    return "\n".join(lines)
+
+
+def _fmt_dns_diagram(d: dict[str, Any]) -> str:
+    def values(row: dict[str, Any]) -> str:
+        return ", ".join(row["ips"]) if row["ips"] else (row["error"] or "no answer")
+
+    lines = [f"  {_display(d['name'])}", "      |", "      +-- resolver answers"]
+    for row in d["resolvers"]:
+        lines.append(
+            f"      |   +-- {_display(row['resolver'], 80)} -> {_display(values(row))}"
+        )
+    app = ", ".join(d["application_view"]) if d["application_view"] else "no answer"
+    lines.append(f"      +-- application view -> {_display(app)}")
+    for entry in d["hosts_file_entries"]:
+        lines.append(f"      `-- /etc/hosts -> {_display(entry)}")
+    return "\n".join(lines)
+
+
+def _manual_dns_commands(d: dict[str, Any]) -> list[dict[str, str]]:
+    host = shlex.quote(d["name"])
+    commands = [
+        {"purpose": "DNS A record via the system resolver", "command": f"dig +noall +answer {host} A"},
+        {"purpose": "DNS AAAA record via the system resolver", "command": f"dig +noall +answer {host} AAAA"},
+        {"purpose": "DNS CNAME chain", "command": f"dig +noall +answer {host} CNAME"},
+        {"purpose": "Application resolver view on Linux", "command": f"getent hosts {host}"},
+        {"purpose": "Application resolver view on macOS", "command": f"dscacheutil -q host -a name {host}"},
+        {"purpose": "Check whether /etc/hosts overrides DNS", "command": f"grep -F -- {host} /etc/hosts"},
+    ]
+    for row in d["resolvers"]:
+        resolver = row["resolver"]
+        if resolver != "system default":
+            commands.append({
+                "purpose": f"DNS A record via resolver {resolver}",
+                "command": f"dig @{shlex.quote(resolver)} +noall +answer {host} A",
+            })
+    return commands
+
+
+def _manual_tls_commands(
+    chain: ChainResult,
+    proxy: str | None = None,
+    ca_file: str | None = None,
+) -> list[dict[str, str]]:
+    connect = shlex.quote(f"{chain.host}:{chain.port}")
+    servername = shlex.quote(chain.servername)
+    base = (
+        f"openssl s_client -connect {connect} -servername {servername} "
+        f"-verify_hostname {servername}"
+    )
+    if proxy:
+        base += f" -proxy {shlex.quote(proxy)}"
+    if ca_file:
+        base += f" -CAfile {shlex.quote(ca_file)}"
+    return [
+        {
+            "purpose": "TLS handshake, hostname verification, and all server-sent certificates",
+            "command": f"{base} -showcerts </dev/null 2>&1",
+        },
+        {
+            "purpose": "Full details for the first (leaf) certificate",
+            "command": f"{base} -showcerts </dev/null 2>/dev/null | openssl x509 -noout -text",
+        },
+    ]
+
+
+def _manual_commands(
+    chain: ChainResult | None = None,
+    dns: dict[str, Any] | None = None,
+    proxy: str | None = None,
+    ca_file: str | None = None,
+) -> list[dict[str, str]]:
+    commands: list[dict[str, str]] = []
+    if chain:
+        commands.extend(_manual_tls_commands(chain, proxy=proxy, ca_file=ca_file))
+    if dns:
+        commands.extend(_manual_dns_commands(dns))
+    return commands
+
+
+def _fmt_manual_commands(commands: list[dict[str, str]]) -> str:
+    if not commands:
+        return "  (no manual commands available)"
+    lines = []
+    for item in commands:
+        lines.append(f"  # {item['purpose']}")
+        lines.append(f"  {item['command']}")
     return "\n".join(lines)
 
 
@@ -798,10 +1141,24 @@ def cmd_chain(a: argparse.Namespace) -> int:
     target = a.host_override or a.host
     ch = get_chain(target, a.port, servername=a.host, ca_file=a.ca_file, proxy=a.proxy, timeout=a.timeout)
     if a.json:
-        print(json.dumps(asdict(ch), indent=2))
+        report = asdict(ch)
+        report["tls_info"] = _tls_info(ch)
+        report["certificate_info_table"] = _fmt_certificate_table(ch)
+        report["certificate_chain_diagram"] = _fmt_chain_diagram(ch)
+        report["manual_commands"] = _manual_commands(ch, proxy=a.proxy, ca_file=a.ca_file)
+        print(json.dumps(report, indent=2))
     else:
         print(f"\nCertificate chain for {a.host}:{a.port} (SNI: {ch.servername})")
+        print("\nTLS domain information")
+        print(_fmt_tls_info(ch))
+        print("\nCertificate information table")
+        print(_fmt_certificate_table(ch))
+        print("\nCertificate chain")
         print(_fmt_chain(ch))
+        print("\nCertificate chain diagram")
+        print(_fmt_chain_diagram(ch))
+        print("\nManual commands")
+        print(_fmt_manual_commands(_manual_commands(ch, proxy=a.proxy, ca_file=a.ca_file)))
         print()
     return 0 if ch.verify_code == 0 else 1
 
@@ -811,11 +1168,27 @@ def cmd_verify(a: argparse.Namespace) -> int:
     ch = get_chain(target, a.port, servername=a.host, ca_file=a.ca_file, proxy=a.proxy, timeout=a.timeout)
     v = classify(ch)
     if a.json:
-        print(json.dumps({"chain": asdict(ch), "verdict": v}, indent=2))
+        print(json.dumps({
+            "chain": asdict(ch),
+            "tls_info": _tls_info(ch),
+            "certificate_info_table": _fmt_certificate_table(ch),
+            "certificate_chain_diagram": _fmt_chain_diagram(ch),
+            "manual_commands": _manual_commands(ch, proxy=a.proxy, ca_file=a.ca_file),
+            "verdict": v,
+        }, indent=2))
     else:
         print(f"\nVerification for {a.host}:{a.port}"
               + (f" using CA file {a.ca_file}" if a.ca_file else " using default trust store"))
+        print("\nTLS domain information")
+        print(_fmt_tls_info(ch))
+        print("\nCertificate information table")
+        print(_fmt_certificate_table(ch))
+        print("\nCertificate chain")
         print(_fmt_chain(ch))
+        print("\nCertificate chain diagram")
+        print(_fmt_chain_diagram(ch))
+        print("\nManual commands")
+        print(_fmt_manual_commands(_manual_commands(ch, proxy=a.proxy, ca_file=a.ca_file)))
         print()
         print(_fmt_verdict(v))
         print()
@@ -825,10 +1198,17 @@ def cmd_verify(a: argparse.Namespace) -> int:
 def cmd_dns(a: argparse.Namespace) -> int:
     d = dns_report(a.host, a.resolver)
     if a.json:
-        print(json.dumps(d, indent=2))
+        report = dict(d)
+        report["dns_resolution_diagram"] = _fmt_dns_diagram(d)
+        report["manual_commands"] = _manual_commands(dns=d)
+        print(json.dumps(report, indent=2))
     else:
         print(f"\nDNS comparison for {a.host}")
         print(_fmt_dns(d))
+        print("\nDNS resolution diagram")
+        print(_fmt_dns_diagram(d))
+        print("\nManual commands")
+        print(_fmt_manual_commands(_manual_commands(dns=d)))
         print()
     return 1 if (d["inconsistent"] or d["hosts_override"]) else 0
 
@@ -858,6 +1238,9 @@ def cmd_diagnose(a: argparse.Namespace) -> int:
 
     chain = get_chain(target, a.port, servername=a.host, ca_file=a.ca_file, proxy=a.proxy, timeout=a.timeout)
     report["chain"] = asdict(chain)
+    report["tls_info"] = _tls_info(chain)
+    report["certificate_info_table"] = _fmt_certificate_table(chain)
+    report["certificate_chain_diagram"] = _fmt_chain_diagram(chain)
 
     # If a candidate proxy CA was supplied, test whether it validates the chain.
     proxy_ca_ok: bool | None = None
@@ -873,6 +1256,10 @@ def cmd_diagnose(a: argparse.Namespace) -> int:
     if not a.no_dns and not _is_ip(a.host):
         dns = dns_report(a.host, a.resolver)
         report["dns"] = dns
+    report["dns_resolution_diagram"] = _fmt_dns_diagram(dns) if dns else None
+    report["manual_commands"] = _manual_commands(
+        chain, dns=dns, proxy=a.proxy, ca_file=a.ca_file
+    )
 
     trust = truststore_report()
     report["truststore"] = trust
@@ -885,19 +1272,33 @@ def cmd_diagnose(a: argparse.Namespace) -> int:
     print(f"TLS diagnosis: {a.host}:{a.port}")
     print("=" * 68)
 
-    print("\n1. Certificate chain the server sent")
+    print("\n1. TLS domain information")
+    print(_fmt_tls_info(chain))
+
+    print("\n2. Certificate information table")
+    print(_fmt_certificate_table(chain))
+
+    print("\n3. Certificate chain the server sent")
     print(_fmt_chain(chain))
+
+    print("\n4. Certificate chain diagram")
+    print(_fmt_chain_diagram(chain))
 
     if "proxy_ca_check" in report:
         ok = report["proxy_ca_check"]["verified"]
-        print(f"\n2. Candidate proxy CA ({a.proxy_ca})")
+        print(f"\n5. Candidate proxy CA ({a.proxy_ca})")
         print(f"  verified the chain: {'YES — this CA signed it' if ok else 'no'}")
 
     if dns:
-        print("\n3. DNS cross-check")
+        print("\n6. DNS cross-check")
         print(_fmt_dns(dns))
+        print("\n7. DNS resolution diagram")
+        print(_fmt_dns_diagram(dns))
 
-    print("\n4. Trust stores")
+    print("\n8. Manual commands")
+    print(_fmt_manual_commands(report["manual_commands"]))
+
+    print("\n9. Trust stores")
     print(_fmt_truststore(trust))
 
     print("\n" + "-" * 68)

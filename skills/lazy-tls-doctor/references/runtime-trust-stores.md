@@ -26,8 +26,8 @@ python3 scripts/tls_doctor.py truststore
 If a proxy is intercepting, extract the signer it presents:
 
 ```bash
-echo | openssl s_client -connect api.example.com:443 \
-  -servername api.example.com -showcerts 2>/dev/null \
+openssl s_client -connect api.example.com:443 \
+  -servername api.example.com -showcerts </dev/null 2>/dev/null \
   | awk '/BEGIN CERT/{f=1} f{print} /END CERT/{f=0}' > presented-chain.pem
 ```
 
