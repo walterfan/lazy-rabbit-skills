@@ -1,0 +1,10 @@
+{"source": "ticket-101", "text": "POST /v1/transcriptions returned 401 Unauthorized. Invalid token."}
+{"source": "ticket-102", "text": "Got HTTP 401 unauthorized when calling the API with my key"}
+{"source": "ticket-103", "text": "401 Unauthorized - the access token was rejected"}
+{"source": "slack-88", "text": "I uploaded audio and GET /transcriptions/abc-123-def returned {'status':'processing','text':None}. Why is text null?"}
+{"source": "slack-91", "text": "result is {'status': 'processing', 'text': None} for job 9f8c2a1b4d5e, is it broken?"}
+{"source": "ticket-120", "text": "Traceback (most recent call last):\n  File \"/home/me/app.py\", line 42, in <module>\n    r.json()['text'].upper()\nAttributeError: 'NoneType' object has no attribute 'upper'"}
+{"source": "ticket-121", "text": "AttributeError: 'NoneType' object has no attribute 'upper' happening in my script at line 12"}
+{"source": "ticket-140", "text": "HTTP 429 Too Many Requests, rate limit exceeded, retry after 30s"}
+{"source": "ticket-141", "text": "got 429 too many requests when looping the poll"}
+{"source": "ticket-160", "text": "requests.exceptions.ConnectionError: Failed to establish a new connection: timed out"}

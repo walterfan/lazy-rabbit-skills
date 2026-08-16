@@ -1,0 +1,19 @@
+# Minimal, non-root sandbox image for: {{title}}
+# Small attack surface + unprivileged user. Runtime limits come from run.sh.
+FROM python:3.12-slim
+
+# Non-root user; the app dir is owned by it and the rest stays read-only at run.
+RUN useradd --create-home --uid 1000 sandbox
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY sandbox_setup.py .
+RUN chown -R sandbox:sandbox /app
+
+USER sandbox
+
+# No secrets in the image. The token is injected at run time via --env.
+# No EXPOSE / no server: this box makes outbound calls only.
+ENTRYPOINT ["python", "/app/sandbox_setup.py"]

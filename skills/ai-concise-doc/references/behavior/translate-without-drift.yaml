@@ -1,0 +1,21 @@
+prompt: |
+  Use $ai-concise-doc to translate the following document to English. Preserve the
+  heading count, paragraph count, bullet count, number, negation, and uncertainty.
+
+  # 目标
+
+  可用性必须达到 99.9%。
+
+  # 约束
+
+  - 客户端不得自动重试。
+  - 上线日期：待确认。
+expect:
+  contains:
+    - "# Goal"
+    - "# Constraints"
+    - "99.9%"
+    - "must not"
+    - "TBD"
+  max_cost_usd: 0.10
+  max_duration_seconds: 120

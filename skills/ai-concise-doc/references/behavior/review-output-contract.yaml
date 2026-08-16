@@ -1,0 +1,17 @@
+prompt: |
+  Use $ai-concise-doc in review mode. Mark what should stay, what can be deleted or
+  merged without loss, and then provide the compressed version.
+
+  系统将在 2026-09-01 切换到新域名。新域名是 api.example.com。值得注意的是，
+  这次域名切换非常重要，需要大家高度重视。客户端必须在 2026-08-25 前完成升级。
+  综上所述，请大家高度重视这次非常重要的域名切换。
+expect:
+  contains:
+    - "可保留"
+    - "可无损删除/合并"
+    - "压缩后版本"
+    - "2026-09-01"
+    - "api.example.com"
+    - "2026-08-25"
+  max_cost_usd: 0.10
+  max_duration_seconds: 120

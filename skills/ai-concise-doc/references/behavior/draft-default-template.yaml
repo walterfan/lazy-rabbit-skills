@@ -1,0 +1,19 @@
+prompt: |
+  Use $ai-concise-doc to draft a concise technical note. No template is provided.
+  The reader is a backend engineer who already knows Kubernetes. The change moves
+  health checks from port 8080 to port 9090. The reason is to isolate health traffic.
+  The mechanism is a Service and Deployment configuration update. Provide one
+  kubectl verification example.
+expect:
+  contains:
+    - "# What"
+    - "## Abstract"
+    - "# Why"
+    - "# How"
+    - "# Example"
+    - "# Conclusion"
+    - "# Reference"
+    - "9090"
+    - "kubectl"
+  max_cost_usd: 0.10
+  max_duration_seconds: 120

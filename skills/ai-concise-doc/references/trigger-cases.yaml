@@ -1,0 +1,27 @@
+# Trigger cases for ai-concise-doc.
+cases:
+  - prompt: "这份 AI 生成的 RFC 太啰嗦，请无损压缩并保留所有数字、约束和决策。"
+    expect: trigger
+  - prompt: "Remove filler from this runbook and limit each section to three bullets."
+    expect: trigger
+  - prompt: "按 What/Why/How/Example 模板写一份简洁技术说明，每节严格限制条目数。"
+    expect: trigger
+  - prompt: "审查这份周报，标出可以无损删除或合并的段落，再给压缩版。"
+    expect: trigger
+  - prompt: "Translate this design note to English while keeping every heading, paragraph, and bullet aligned."
+    expect: trigger
+  - prompt: "去掉这份提案里的 AI 味和空话，但不要改变日期、负责人和 MUST NOT 条款。"
+    expect: trigger
+
+  - prompt: "为新的支付功能写一份完整的 feature design document。"
+    expect: no-trigger
+  - prompt: "把这句聊天消息翻译成英文：我们明天再聊。"
+    expect: no-trigger
+  - prompt: "Proofread this email and explain every grammar correction."
+    expect: no-trigger
+  - prompt: "总结这份 PDF 的主要观点。"
+    expect: no-trigger
+  - prompt: "围绕 AI 客服尽可能发散 20 个产品创意。"
+    expect: no-trigger
+  - prompt: "Write a comprehensive microservice architecture design with deployment and observability sections."
+    expect: no-trigger

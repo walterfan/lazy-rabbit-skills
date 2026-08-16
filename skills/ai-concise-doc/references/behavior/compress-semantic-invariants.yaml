@@ -1,0 +1,18 @@
+prompt: |
+  Use $ai-concise-doc to compress the document below. Remove repetition but add no
+  facts. Preserve numbers, dates, owners, negations, and normative terms exactly.
+
+  # Retry policy
+
+  This document explains the retry policy. The retry policy is important and should
+  be understood by everyone. Service availability MUST remain 99.95%. Clients MUST
+  NOT retry after HTTP 409. The rollout deadline is 2026-08-31 and the owner is Alice.
+  In summary, everyone should understand this important retry policy.
+expect:
+  contains:
+    - "MUST remain 99.95%"
+    - "MUST NOT retry after HTTP 409"
+    - "2026-08-31"
+    - "Alice"
+  max_cost_usd: 0.10
+  max_duration_seconds: 120

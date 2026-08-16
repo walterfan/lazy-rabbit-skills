@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI Concise Docs"
+  short_description: "压缩 AI 生成文档，去掉废话并保留决策与执行信息"
+  default_prompt: "Use $ai-concise-doc to remove filler while preserving every decision, constraint, number, and heading."

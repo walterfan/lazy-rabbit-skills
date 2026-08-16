@@ -22,6 +22,8 @@ agent can load on demand.
 | [`feature-design-doc`](skills/feature-design-doc/SKILL.md) | Generate feature-level technical design specs from a practical template. |
 | [`microservice-design-doc`](skills/microservice-design-doc/SKILL.md) | Generate structured design documents for microservice projects. |
 | [`write-user-story`](skills/write-user-story/SKILL.md) | Write well-formed agile user stories. |
+| [`ai-concise-doc`](skills/ai-concise-doc/SKILL.md) | Remove filler from reader-facing documents with fixed budgets and lossless semantic checks. |
+| [`lazy-doc-review`](skills/lazy-doc-review/SKILL.md) | Review and rewrite reader-facing documents for facts, reasoning, audience fit, and cognitive load. |
 
 ### Diagrams & brainstorming
 

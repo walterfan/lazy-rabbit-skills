@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Run the sandbox with the guardrails from sandbox.config.yaml actually ENFORCED.
+# A config file the runtime ignores is theater; these flags make it real.
+set -euo pipefail
+
+IMAGE="${IMAGE:-api-sandbox:latest}"
+
+# The token is passed in at RUN time from the environment / OAuth broker.
+# It is NEVER baked into the image. Rotate freely.
+: "${ACCESS_TOKEN:?set ACCESS_TOKEN in the environment (OAuth2-injected); do not hardcode}"
+
+# Egress allowlist is enforced by attaching to a pre-created, locked-down
+# network. Create it once, out of band, e.g.:
+#   docker network create --internal sandbox-net   # then add firewall rules
+#   allowlisted hosts: {{run_hosts}}
+NETWORK="${NETWORK:-sandbox-net}"
+
+exec docker run --rm \
+  --name "api-sandbox-$$" \
+  --network "$NETWORK" \
+  --cpus "{{cpus}}" \
+  --memory "{{memory}}" \
+  --pids-limit 256 \
+  --read-only \
+  --tmpfs /tmp/work:rw,size=256m \
+  --cap-drop ALL \
+  --security-opt no-new-privileges \
+  --user 1000:1000 \
+  --env ACCESS_TOKEN \
+  --stop-timeout 5 \
+  "$IMAGE" \
+  timeout {{timeout}} python /app/sandbox_setup.py

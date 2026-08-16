@@ -21,6 +21,8 @@ Lazy Rabbit 的个人 AI 技能（Skill）合集。
 | [`feature-design-doc`](skills/feature-design-doc/SKILL.md) | 基于实用模板生成功能级技术设计文档。 |
 | [`microservice-design-doc`](skills/microservice-design-doc/SKILL.md) | 为微服务项目生成结构化设计文档。 |
 | [`write-user-story`](skills/write-user-story/SKILL.md) | 编写规范的敏捷用户故事。 |
+| [`ai-concise-doc`](skills/ai-concise-doc/SKILL.md) | 用固定配额和语义不变量检查，删除面向读者文档中的废话。 |
+| [`lazy-doc-review`](skills/lazy-doc-review/SKILL.md) | 评审并改写面向读者的文档：核对事实与推理、匹配受众、降低认知负担。 |
 
 ### 图表与头脑风暴
 
